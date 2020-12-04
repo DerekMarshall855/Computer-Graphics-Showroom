@@ -13,7 +13,7 @@ camera.lookAt(0, player.height, 0);
 var renderer = new THREE.WebGLRenderer();
 renderer.setClearColor("#e5e5e5"); //Background colour is grey
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.physicallyCorrectLights = true;
+renderer.physicallyCorrectLights = true; //Required for GLTFLoader to work
 
 document.body.appendChild(renderer.domElement);
 
@@ -24,7 +24,7 @@ window.addEventListener('resize', () => { //Listen for window resize, adjust ren
 });
 
 var axes = new THREE.AxesHelper(30);
-scene.add(axes);
+scene.add(axes); //Adds xyz axis reference lines in middle of scene, comment out when finished
 
 //First Person Controls
 var pointerLockControls = new THREE.PointerLockControls(camera, renderer.domElement);
@@ -195,7 +195,7 @@ var light = new THREE.AmbientLight(0xFFFFFF, 3); //White light
 scene.add(light)
 
 //Lamp 1
-
+//TODO: Clicking Lamp1 (cube) Toggles PointLight1
 var geometry = new THREE.BoxGeometry(1, 1, 1)
 var material = new THREE.MeshLambertMaterial({
     color: 0xA6441A
@@ -207,11 +207,11 @@ mesh.position.set(-5, 2, 0);
 //Point Light 1
 
 var light = new THREE.PointLight(0xFFFFFF, 1, 500);
-//mesh.add(light); //Put light into box, box now lamp
+//scene.add(light); //Put light into box, box now lamp
 scene.add(mesh);
 
 //Lamp 2
-
+//TODO: Clicking Lamp2 (cube) Toggles PointLight2
 var geometry = new THREE.BoxGeometry(1, 1, 1)
 var material = new THREE.MeshLambertMaterial({
     color: 0xA6441A
@@ -223,7 +223,7 @@ mesh.position.set(5, 2, 0);
 //Point Light 2
 
 var light = new THREE.PointLight(0xFFFFFF, 1, 500); //White light, 1 intensity, 500 units in each direction
-//mesh.add(light); //Put light into box, box now lamp
+//scene.add(light); //Put light into box, box now lamp
 scene.add(mesh);
 
 // MOUSE CONTROLS
@@ -238,9 +238,23 @@ function onClick(event) {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
+
+    // update the picking ray with the camera and mouse position
+    raycaster.setFromCamera(mouse, camera);
+
+    // calculate objects intersecting the picking ray
+    const intersects = raycaster.intersectObjects(scene.children);
+
+    //Rotates objects 3 RAD on X axis every click, doesnt work for loaded objects currently
+    for (let i = 0; i < intersects.length; i++) {
+        if (camera.position.distanceTo(intersects[i].object.position) < 7) {
+            intersects[i].object.rotateX(3); //Can check objects name with "intersects[i].object.name == 'Something'" if one is set
+        }
+    }
+
 }
 
-window.addEventListener('click', onClick, false);
+window.addEventListener('click', onClick, false); //Adds func onClick as click action
 
 // KEYBOARD CONTROLS
 
@@ -252,7 +266,7 @@ function keyDown(event) {
 
 function keyUp(event) {
     keyboard[event.keyCode] = false;
-    if (event.keyCode == 27) {
+    if (event.keyCode == 27) { //Key 27 - Esc Key
         if (pointerLockControls.isLocked) {
             pointerLockControls.unlock();
         } else {
@@ -264,14 +278,14 @@ function keyUp(event) {
 window.addEventListener('keydown', keyDown);
 window.addEventListener('keyup', keyUp);
 
-//IN BOUNDS LOGIC || FIX LATER
+//IN BOUNDS LOGIC || DOESNT WORK, Maybe try implementing differently
 
 //Check direction of movement and position, prevent out of bounds movement
-
+//
 // var checkBounds = function(direction) {
 //     var flag = true;
 //     var direction = new THREE.Vector3();
-//     camera.getWorldDirection(direction);
+//     camera.getWorldDirection(direction); //Buts camera direction into Vec3 direction
 //     console.log(direction);
 //     console.log(camera.position);
 //     if (direction == "forward") {
@@ -299,29 +313,20 @@ window.addEventListener('keyup', keyUp);
 
 //GAME LOOP FUNCTIONS
 
+
+//Update render/graphic values, clear, render
 var render = function() {
-
-    // update the picking ray with the camera and mouse position
-    raycaster.setFromCamera(mouse, camera);
-
-    // calculate objects intersecting the picking ray
-    const intersects = raycaster.intersectObjects(scene.children);
-
-    for (let i = 0; i < intersects.length; i++) {
-        if (camera.position.distanceTo(intersects[i].object.position) < 7) {
-            intersects[i].object.rotateX(3);
-        }
-    }
-
     // Render function
     renderer.clear();
     renderer.render(scene, camera);
 };
 
-var clock = new THREE.Clock();
-var raycaster = new THREE.Raycaster();
+var clock = new THREE.Clock(); //clock.getDelta used for physics, might not need
+var raycaster = new THREE.Raycaster(); //Casts ray from camera, used for click detection
 var mouse = new THREE.Vector2();
 
+
+//Update variable values
 var update = function() {
     var delta = clock.getDelta();
 
@@ -343,6 +348,8 @@ var update = function() {
 
 };
 
+
+//Called 60 times/second
 var gameLoop = function() {
     requestAnimationFrame(gameLoop);
 
