@@ -1,5 +1,5 @@
 // CONSTANTS
-const MOVE_SPEED = 0.25;
+const MOVE_SPEED = 0.40;
 
 // Player Object
 var player = { height: 1.8 };
@@ -12,7 +12,7 @@ camera.lookAt(0, player.height, 0);
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setClearColor("#e5e5e5"); //Background colour is grey
-renderer.setSize(window.innerWidth, window.innerHeight); 
+renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.physicallyCorrectLights = true; //Required for GLTFLoader to work
 
 document.body.appendChild(renderer.domElement);
@@ -52,6 +52,22 @@ var material = new THREE.MeshLambertMaterial({
 });
 var mesh = new THREE.Mesh(geometry, material);
 mesh.rotateX(-.5 * Math.PI); //Rotate 90Deg or .5Rad to create floor
+mesh.name = 'floor';
+scene.add(mesh);
+
+//Ceiling Plane
+
+var textureLoader = new THREE.TextureLoader();
+var texture = new textureLoader.load('../textures/floor/hardwood.jpg');
+var geometry = new THREE.PlaneGeometry(50, 50, 1);
+var material = new THREE.MeshLambertMaterial({
+    color: 0xFFFFFF,
+    map: texture,
+    side: THREE.DoubleSide
+});
+var mesh = new THREE.Mesh(geometry, material);
+mesh.rotateX(-.5 * Math.PI); //Rotate 90Deg or .5Rad to create floor
+mesh.position.y = 20;
 mesh.name = 'floor';
 scene.add(mesh);
 
@@ -127,17 +143,15 @@ loader.load(
     '../models/skull/scene.gltf',
     function(gltf) {
         model1 = gltf.scene;
+        model1.metalness = 0;
         model1.name = 'skull';
+        model1.castShadow = true;
         scene.add(model1);
-        scene.add(gltf.scene);
-        gltf.animations;
-        gltf.scene;
-        gltf.scenes;
-        gltf.cameras;
-        gltf.asset;
-        gltf.scene.children[0].position.set(0, player.height, 20);
+        model1.position.set(0, player.height, 20);
         const helper = new THREE.BoxHelper(model1); //creates clickable box around object so onClick intersect works
         helper.geometry.computeBoundingBox();
+        helper.scale.set(2, 2, 2)
+        helper.position.set(0, player.height, 20);
         helper.name = 'skull'
         helper.material.visible = false;
         scene.add(helper);
@@ -153,21 +167,20 @@ loader.load(
 //Object 2
 var model2 = new THREE.Object3D();
 loader.load(
-    '../models/ship/scene.gltf',
+    '../models/axe/scene.gltf',
     function(gltf) {
         model2 = gltf.scene;
-        model2.name = 'ship';
+        model2.metalness = 0;
+        model2.name = 'axe';
+        model2.castShadow = true;
         scene.add(model2);
-        gltf.animations;
-        gltf.scene;
-        gltf.scenes;
-        gltf.cameras;
-        gltf.asset;
-        gltf.scene.children[0].position.set(20, player.height, 0);
-        gltf.scene.children[0].scale.set(.01, .01, .01);
+        model2.position.set(20, player.height, 0);
+        model2.scale.set(.3, .3, .3);
         const helper = new THREE.BoxHelper(model2);
         helper.geometry.computeBoundingBox();
-        helper.name = 'ship'
+        helper.scale.set(4, 4, 4);
+        helper.position.set(20, player.height, 0);
+        helper.name = 'axe'
         helper.material.visible = false;
         scene.add(helper);
     },
@@ -184,21 +197,19 @@ loader.load(
 //Object 3
 var model3 = new THREE.Object3D();
 loader.load(
-    '../models/drone/scene.gltf',
+    '../models/chest/scene.gltf',
     function(gltf) {
         model3 = gltf.scene;
-        model3.name = 'drone';
+        model3.name = 'chest';
+        model3.castShadow = true;
         scene.add(model3);
-        gltf.animations;
-        gltf.scene;
-        gltf.scenes;
-        gltf.cameras;
-        gltf.asset;
-        gltf.scene.children[0].position.set(-20, player.height, 0);
-        gltf.scene.children[0].scale.set(.01, .01, .01);
+        model3.position.set(-20, 0, 0);
+        model3.scale.set(.05, .05, .05);
         const helper = new THREE.BoxHelper(model3);
         helper.geometry.computeBoundingBox();
-        helper.name = 'drone'
+        helper.scale.set(2, 2, 2);
+        helper.position.set(-20, 0, 0);
+        helper.name = 'chest'
         helper.material.visible = false;
         scene.add(helper);
     },
@@ -220,7 +231,7 @@ loader.load(
 
 //Ambient Light
 
-var light = new THREE.AmbientLight(0xFFFFFF,1); //White light
+var light = new THREE.AmbientLight(0xFFFFFF, 1); //White light
 scene.add(light)
 
 //Lamp 1
@@ -229,15 +240,29 @@ var geometry = new THREE.BoxGeometry(1, 1, 1)
 var material = new THREE.MeshLambertMaterial({
     color: 0xA6441A,
     opacity: 0.7,
-    transparent:true
+    transparent: true
 });
 var mesh1 = new THREE.Mesh(geometry, material);
 mesh1.name = "lamp1";
 mesh1.position.set(-5, 2, 0);
 
+//ColorChange 1
+//Clicking Lamp1 (cube) Toggles PointLight1
+var geometry = new THREE.BoxGeometry(1, 1, 1)
+var material = new THREE.MeshLambertMaterial({
+    color: 0xFFFFF,
+    opacity: 0.7,
+    transparent: true
+});
+var mesh = new THREE.Mesh(geometry, material);
+mesh.name = "color_swap_1";
+mesh.position.set(-5, 2, -5);
+scene.add(mesh)
+
 //Point Light 1
-var light1 = new THREE.PointLight(0xFFFFFF, 4, 50);
-light1.position.set(-10,15,0);
+var light1 = new THREE.PointLight(0x0D16E1, 3.5, 100); //Purple light, 3.5 intensity, 150 units
+light1.position.set(-10, 15, 0);
+light1.intensity = 3
 scene.add(light1); //Put light into box, box now lamp
 scene.add(mesh1);
 
@@ -247,21 +272,46 @@ var geometry = new THREE.BoxGeometry(1, 1, 1)
 var material = new THREE.MeshLambertMaterial({
     color: 0xA6441A,
     opacity: 0.7,
-    transparent:true
+    transparent: true
 });
 var mesh2 = new THREE.Mesh(geometry, material);
 mesh2.name = "lamp2";
 mesh2.position.set(5, 2, 0);
 
+//ColorChange 2
+//Clicking Lamp1 (cube) Toggles PointLight1
+var geometry = new THREE.BoxGeometry(1, 1, 1)
+var material = new THREE.MeshLambertMaterial({
+    color: 0xFF0FFF,
+    opacity: 0.7,
+    transparent: true
+});
+var mesh = new THREE.Mesh(geometry, material);
+mesh.name = "color_swap_2";
+mesh.position.set(5, 2, -5);
+scene.add(mesh)
+
 //Point Light 2
-var light2 = new THREE.PointLight(0xFFFFFF, 4, 50); //White light, 4 intensity, 50 units in each direction
-light2.position.set(10,15,0);
+var light2 = new THREE.PointLight(0xFF0000, 3.5, 100); //RED light, 3.5 intensity, 150 units in each direction
+light2.intensity = 3
+light2.position.set(10, 15, 0);
 scene.add(light2); //Put light into box, box now lamp
 scene.add(mesh2);
+
+//Mallable Box
+var geometry = new THREE.BoxGeometry(1, 1, 1)
+var material = new THREE.MeshLambertMaterial({
+    color: 0xFFFFFF
+});
+var funBox = new THREE.Mesh(geometry, material);
+funBox.name = "fun_box";
+funBox.position.set(0, player.height, -15);
+scene.add(funBox)
 
 // MOUSE CONTROLS
 
 var raycaster = new THREE.Raycaster();
+var colorArray = [0xF925BE, 0x24E10D, 0xFF0000, 0xFFFFFF, 0x0D16E1, 0xA6441A, 0xFF0FFF];
 
 function onClick(event) {
 
@@ -270,46 +320,59 @@ function onClick(event) {
 
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    
+
 
     // update the picking ray with the camera and mouse position
     raycaster.setFromCamera(mouse, camera);
 
     // calculate objects intersecting the picking ray
-    const intersects = raycaster.intersectObjects(scene.children);
-    
+    const intersects = raycaster.intersectObjects(scene.children, true);
     //Rotates objects 3 RAD on X axis every click, doesnt work for loaded objects currently
-    flag1 = false; flag2 = false; flag3 = false;
     for (let i = 0; i < intersects.length; i++) {
-        if (camera.position.distanceTo(intersects[i].object.position) < 7) {
+        if (camera.position.distanceTo(intersects[i].object.position) < 20) {
             //Point lights turn on and off when lamps are clicked
-            if (intersects[i].object.name == 'lamp1'){
-                if (light1.visible == true){
+            if (intersects[i].object.name == 'lamp1') {
+                if (light1.visible == true) {
                     light1.visible = false;
                 } else {
                     light1.visible = true;
                 }
-            } else if (intersects[i].object.name == 'lamp2'){
-                if (light2.visible == true){
+            } else if (intersects[i].object.name == 'lamp2') {
+                if (light2.visible == true) {
                     light2.visible = false;
                 } else {
                     light2.visible = true;
                 }
-            //Clicking the three gltf objects rotates them
-            } else if (intersects[i].object.name != 'floor') {
-                if (intersects[i].object.name == 'skull' && !flag1){
-                    flag1 = true;
-                    model1.children[0].rotation.x += 3;
-                    console.log(model1);
-                } else if (intersects[i].object.name == 'ship' && !flag2){
-                    flag2 = true;
-                    model2.children[0].rotation.x += 3;
-                    console.log(model2);
-                } else if (intersects[i].object.name == 'drone' && !flag3){
-                    flag3 = true;
-                    model3.children[0].rotation.x += 3;
-                    console.log(model3);
+            } else if (intersects[i].object.name == 'color_swap_1') {
+                light1.color.setHex(colorArray[Math.floor(Math.random() * colorArray.length)]); //Pink
+            } else if (intersects[i].object.name == 'color_swap_2') {
+                light2.color.setHex(colorArray[Math.floor(Math.random() * colorArray.length)]); //Green
+            } else if (intersects[i].object.name == 'fun_box') {
+                if (flag4) {
+                    flag4 = false;
+                } else {
+                    flag4 = true;
                 }
+
+            }
+
+            if (intersects[i].object.name == 'skull' && !flag1) {
+                flag1 = true;
+                console.log(model1);
+            } else if (intersects[i].object.name == 'skull' && flag1) {
+                flag1 = false;
+            }
+            if (intersects[i].object.name == 'axe' && !flag2) {
+                flag2 = true;
+                console.log(model2);
+            } else if (intersects[i].object.name == 'axe' && flag2) {
+                flag2 = false;
+            }
+            if (intersects[i].object.name == 'chest' && !flag3) {
+                flag3 = true;
+                console.log(model3);
+            } else if (intersects[i].object.name == 'chest' && flag3) {
+                flag3 = false;
             }
         }
     }
@@ -340,44 +403,44 @@ function keyUp(event) {
 window.addEventListener('keydown', keyDown);
 window.addEventListener('keyup', keyUp);
 
-//IN BOUNDS LOGIC || DOESNT WORK, Maybe try implementing differently
+//CAMERA BOUNDS
+var bounds = function() {
+    var loc = camera.position;
+    if (loc.x > 25 || loc.z > 25 || loc.x < -25 || loc.z < -25) {
+        camera.position.set(0, player.height, -5)
+    }
+}
 
-//Check direction of movement and position, prevent out of bounds movement
-
-// var checkBounds = function(direction) {
-//     var flag = true;
-//     var direction = new THREE.Vector3();
-//     camera.getWorldDirection(direction); //Buts camera direction into Vec3 direction
-//     console.log(direction);
-//     console.log(camera.position);
-//     if (direction == "forward") {
-//         if (camera.positon.x + 0.5 > 23 && direction.x > 0) {
-//             flag = false;
-//         }
-//     }
-//     if (direction == "backward") {
-//         if (camera.position.x - 0.5 < -23 || camera.position.x + 0.5 > 23 || camera.position.z - 0.5 < -23 || camera.position.z + 0.5 > 23) {
-//             flag = false;
-//         }
-//     }
-//     if (direction == "left") {
-//         if (camera.position.x - 0.5 < -23 || camera.position.x + 0.5 > 23 || camera.position.z - 0.5 < -23 || camera.position.z + 0.5 > 23) {
-//             flag = false;
-//         }
-//     }
-//     if (direction == "right") {
-//         if (camera.position.x - 0.5 < -23 || camera.position.x + 0.5 > 23 || camera.position.z - 0.5 < -23 || camera.position.z + 0.5 > 23) {
-//             flag = false;
-//         }
-//     }
-//     return flag;
-// }
 
 //GAME LOOP FUNCTIONS
 
-
 //Update render/graphic values, clear, render
 var render = function() {
+    if (flag1) {
+        //model1.rotation.x += 0.05;
+        model1.rotation.y += 0.05;
+    }
+    if (flag2) {
+        //model2.rotation.x += 0.05;
+        model2.rotation.y += 0.05;
+    }
+    if (flag3) {
+        //model3.rotation.x += 0.05;
+        model3.rotation.y += 0.05;
+    }
+    if (flag4) {
+        if (!flag5) {
+            funBox.position.x -= 0.5;
+            if (funBox.position.x < -10) {
+                flag5 = true;
+            }
+        } else {
+            funBox.position.x += 0.5;
+            if (funBox.position.x > 10) {
+                flag5 = false;
+            }
+        }
+    }
     // Render function
     renderer.clear();
     renderer.render(scene, camera);
@@ -407,30 +470,35 @@ var update = function() {
             pointerLockControls.moveRight(MOVE_SPEED);
         }
     }
+    bounds();
 
 };
 
-flag = false;
+flag1 = false;
+flag2 = false;
+flag3 = false;
+flag4 = false;
+flag5 = false;
 //Called 60 times/second
 var gameLoop = function() {
     requestAnimationFrame(gameLoop);
     //Animated cubes and lights for an extra feature --> can remove
 
-    mesh1.rotation.x+= 0.01;
-    mesh2.rotation.x+= 0.01;
-    mesh1.rotation.y+= 0.01;
-    mesh2.rotation.y+= 0.01;
+    mesh1.rotation.x += 0.01;
+    mesh2.rotation.x += 0.01;
+    mesh1.rotation.y += 0.01;
+    mesh2.rotation.y += 0.01;
 
-    if (light1.intensity <= 5 && !flag){
-        light1.intensity+= 0.03;
-        light2.intensity+= 0.03;
-    } else if (light1.intensity >0){
-        light1.intensity -= 0.03;
-        light2.intensity -= 0.03;
-        flag = true;
-    } else {
-        flag = false;
-    }
+    // if (light1.intensity <= 5 && !flag) {
+    //     light1.intensity += 0.03;
+    //     light2.intensity += 0.03;
+    // } else if (light1.intensity > 0) {
+    //     light1.intensity -= 0.03;
+    //     light2.intensity -= 0.03;
+    //     flag = true;
+    // } else {
+    //     flag = false;
+    // }
 
     update();
     render();

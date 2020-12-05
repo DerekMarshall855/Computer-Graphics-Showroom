@@ -1,0 +1,215 @@
+{
+    "accessors": [{
+            "bufferView": 2,
+            "componentType": 5126,
+            "count": 278,
+            "max": [
+                2.1955299377441406,
+                11.160510063171387,
+                21.125089645385742
+            ],
+            "min": [-2.2005600929260254, -11.243180274963379, -22.122499465942383],
+            "type": "VEC3"
+        },
+        {
+            "bufferView": 2,
+            "byteOffset": 3336,
+            "componentType": 5126,
+            "count": 278,
+            "max": [
+                1,
+                0.99998396635055542,
+                1
+            ],
+            "min": [-1, -0.99998396635055542, -1],
+            "type": "VEC3"
+        },
+        {
+            "bufferView": 1,
+            "componentType": 5126,
+            "count": 278,
+            "max": [
+                0.98628002405166626,
+                0.98219001293182373
+            ],
+            "min": [
+                0.021090000867843628,
+                0.013500000350177288
+            ],
+            "type": "VEC2"
+        },
+        {
+            "bufferView": 0,
+            "componentType": 5125,
+            "count": 1176,
+            "max": [
+                277
+            ],
+            "min": [
+                0
+            ],
+            "type": "SCALAR"
+        }
+    ],
+    "asset": {
+        "extras": {
+            "author": "Gui Santos (https://sketchfab.com/gsantos)",
+            "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+            "source": "https://sketchfab.com/3d-models/hand-painted-axe-3b8f01d1fc0b41b3b9a1d1d62b2cab47",
+            "title": "Hand Painted Axe"
+        },
+        "generator": "Sketchfab-9.75.0",
+        "version": "2.0"
+    },
+    "bufferViews": [{
+            "buffer": 0,
+            "byteLength": 4704,
+            "byteOffset": 0,
+            "name": "floatBufferViews",
+            "target": 34963
+        },
+        {
+            "buffer": 0,
+            "byteLength": 2224,
+            "byteOffset": 4704,
+            "byteStride": 8,
+            "name": "floatBufferViews",
+            "target": 34962
+        },
+        {
+            "buffer": 0,
+            "byteLength": 6672,
+            "byteOffset": 6928,
+            "byteStride": 12,
+            "name": "floatBufferViews",
+            "target": 34962
+        }
+    ],
+    "buffers": [{
+        "byteLength": 13600,
+        "uri": "scene.bin"
+    }],
+    "extensionsUsed": [
+        "KHR_materials_unlit"
+    ],
+    "images": [{
+        "uri": "textures/Material_baseColor.png"
+    }],
+    "materials": [{
+        "doubleSided": true,
+        "emissiveFactor": [
+            0,
+            0,
+            0
+        ],
+        "extensions": {
+            "KHR_materials_unlit": {}
+        },
+        "name": "Material",
+        "pbrMetallicRoughness": {
+            "baseColorFactor": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "baseColorTexture": {
+                "index": 0,
+                "texCoord": 0
+            },
+            "metallicFactor": 0,
+            "roughnessFactor": 1
+        }
+    }],
+    "meshes": [{
+        "name": "Cylinder.000_0",
+        "primitives": [{
+            "attributes": {
+                "NORMAL": 1,
+                "POSITION": 0,
+                "TEXCOORD_0": 2
+            },
+            "indices": 3,
+            "material": 0,
+            "mode": 4
+        }]
+    }],
+    "nodes": [{
+            "children": [
+                1
+            ],
+            "name": "RootNode (gltf orientation matrix)",
+            "rotation": [-0.70710678118654746, -0, -0,
+                0.70710678118654757
+            ]
+        },
+        {
+            "children": [
+                2
+            ],
+            "matrix": [
+                0.99994587898254395, -5.6367018467454194e-17,
+                0.010404827073216438,
+                0,
+                5.0034342073429928e-17,
+                1,
+                6.0888899885904336e-16,
+                0, -0.010404827073216438, -6.0833546282801267e-16,
+                0.99994587898254395,
+                0, -0.0021107385400682688, -1.22514845490862e-16, -0.00018629158148542047,
+                1
+            ],
+            "name": "RootNode (model correction matrix)"
+        },
+        {
+            "children": [
+                3
+            ],
+            "name": "Root"
+        },
+        {
+            "children": [
+                4
+            ],
+            "matrix": [
+                0,
+                0.40695000000000003,
+                0,
+                0, -0.40695000000000003,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0.40695000000000003,
+                0,
+                0,
+                0,
+                0,
+                1
+            ],
+            "name": "Cylinder.000"
+        },
+        {
+            "mesh": 0,
+            "name": "Cylinder.000_0"
+        }
+    ],
+    "samplers": [{
+        "magFilter": 9729,
+        "minFilter": 9987,
+        "wrapS": 10497,
+        "wrapT": 10497
+    }],
+    "scene": 0,
+    "scenes": [{
+        "name": "OSG_Scene",
+        "nodes": [
+            0
+        ]
+    }],
+    "textures": [{
+        "sampler": 0,
+        "source": 0
+    }]
+}
