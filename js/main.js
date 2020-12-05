@@ -410,15 +410,28 @@ var update = function() {
 
 };
 
-
+flag = false;
 //Called 60 times/second
 var gameLoop = function() {
     requestAnimationFrame(gameLoop);
-    //Animated cubes for an extra feature --> can remove
+    //Animated cubes and lights for an extra feature --> can remove
+
     mesh1.rotation.x+= 0.01;
     mesh2.rotation.x+= 0.01;
     mesh1.rotation.y+= 0.01;
     mesh2.rotation.y+= 0.01;
+
+    if (light1.intensity <= 5 && !flag){
+        light1.intensity+= 0.03;
+        light2.intensity+= 0.03;
+    } else if (light1.intensity >0){
+        light1.intensity -= 0.03;
+        light2.intensity -= 0.03;
+        flag = true;
+    } else {
+        flag = false;
+    }
+
     update();
     render();
 };
