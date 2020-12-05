@@ -180,15 +180,9 @@ loader.load(
 );
 
 
-var model3 = new THREE.Object3D();
-//Object 3
-var geometry = new THREE.BoxGeometry(1, 1, 1)
-var material = new THREE.MeshLambertMaterial({
-    color: 0xFFFFFF,
-    opacity: 0,
-    transparent:true
-});
 
+//Object 3
+var model3 = new THREE.Object3D();
 loader.load(
     '../models/drone/scene.gltf',
     function(gltf) {
@@ -220,6 +214,10 @@ loader.load(
 //mesh.rotation.set(45, 0, 0); //xyz rotation
 //mesh.scale.set(1, 2, 1);  //xyz scaling
 
+
+//NOTE: Ambient Light affects the three objects, but for some reason the point lights don't
+
+
 //Ambient Light
 
 var light = new THREE.AmbientLight(0xFFFFFF,1); //White light
@@ -233,15 +231,15 @@ var material = new THREE.MeshLambertMaterial({
     opacity: 0.7,
     transparent:true
 });
-var mesh = new THREE.Mesh(geometry, material);
-mesh.name = "lamp1";
-mesh.position.set(-5, 2, 0);
+var mesh1 = new THREE.Mesh(geometry, material);
+mesh1.name = "lamp1";
+mesh1.position.set(-5, 2, 0);
 
 //Point Light 1
 var light1 = new THREE.PointLight(0xFFFFFF, 4, 50);
 light1.position.set(-10,15,0);
 scene.add(light1); //Put light into box, box now lamp
-scene.add(mesh);
+scene.add(mesh1);
 
 //Lamp 2
 //Clicking Lamp2 (cube) Toggles PointLight2
@@ -251,15 +249,15 @@ var material = new THREE.MeshLambertMaterial({
     opacity: 0.7,
     transparent:true
 });
-var mesh = new THREE.Mesh(geometry, material);
-mesh.name = "lamp2";
-mesh.position.set(5, 2, 0);
+var mesh2 = new THREE.Mesh(geometry, material);
+mesh2.name = "lamp2";
+mesh2.position.set(5, 2, 0);
 
 //Point Light 2
 var light2 = new THREE.PointLight(0xFFFFFF, 4, 50); //White light, 4 intensity, 50 units in each direction
 light2.position.set(10,15,0);
 scene.add(light2); //Put light into box, box now lamp
-scene.add(mesh);
+scene.add(mesh2);
 
 // MOUSE CONTROLS
 
@@ -346,34 +344,34 @@ window.addEventListener('keyup', keyUp);
 
 //Check direction of movement and position, prevent out of bounds movement
 
-var checkBounds = function(direction) {
-    var flag = true;
-    var direction = new THREE.Vector3();
-    camera.getWorldDirection(direction); //Buts camera direction into Vec3 direction
-    console.log(direction);
-    console.log(camera.position);
-    if (direction == "forward") {
-        if (camera.positon.x + 0.5 > 23 && direction.x > 0) {
-            flag = false;
-        }
-    }
-    if (direction == "backward") {
-        if (camera.position.x - 0.5 < -23 || camera.position.x + 0.5 > 23 || camera.position.z - 0.5 < -23 || camera.position.z + 0.5 > 23) {
-            flag = false;
-        }
-    }
-    if (direction == "left") {
-        if (camera.position.x - 0.5 < -23 || camera.position.x + 0.5 > 23 || camera.position.z - 0.5 < -23 || camera.position.z + 0.5 > 23) {
-            flag = false;
-        }
-    }
-    if (direction == "right") {
-        if (camera.position.x - 0.5 < -23 || camera.position.x + 0.5 > 23 || camera.position.z - 0.5 < -23 || camera.position.z + 0.5 > 23) {
-            flag = false;
-        }
-    }
-    return flag;
-}
+// var checkBounds = function(direction) {
+//     var flag = true;
+//     var direction = new THREE.Vector3();
+//     camera.getWorldDirection(direction); //Buts camera direction into Vec3 direction
+//     console.log(direction);
+//     console.log(camera.position);
+//     if (direction == "forward") {
+//         if (camera.positon.x + 0.5 > 23 && direction.x > 0) {
+//             flag = false;
+//         }
+//     }
+//     if (direction == "backward") {
+//         if (camera.position.x - 0.5 < -23 || camera.position.x + 0.5 > 23 || camera.position.z - 0.5 < -23 || camera.position.z + 0.5 > 23) {
+//             flag = false;
+//         }
+//     }
+//     if (direction == "left") {
+//         if (camera.position.x - 0.5 < -23 || camera.position.x + 0.5 > 23 || camera.position.z - 0.5 < -23 || camera.position.z + 0.5 > 23) {
+//             flag = false;
+//         }
+//     }
+//     if (direction == "right") {
+//         if (camera.position.x - 0.5 < -23 || camera.position.x + 0.5 > 23 || camera.position.z - 0.5 < -23 || camera.position.z + 0.5 > 23) {
+//             flag = false;
+//         }
+//     }
+//     return flag;
+// }
 
 //GAME LOOP FUNCTIONS
 
@@ -416,7 +414,11 @@ var update = function() {
 //Called 60 times/second
 var gameLoop = function() {
     requestAnimationFrame(gameLoop);
-
+    //Animated cubes for an extra feature --> can remove
+    mesh1.rotation.x+= 0.01;
+    mesh2.rotation.x+= 0.01;
+    mesh1.rotation.y+= 0.01;
+    mesh2.rotation.y+= 0.01;
     update();
     render();
 };
