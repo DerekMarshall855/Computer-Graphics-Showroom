@@ -12,7 +12,7 @@ camera.lookAt(0, player.height, 0);
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setClearColor("#e5e5e5"); //Background colour is grey
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(window.innerWidth, window.innerHeight); 
 renderer.physicallyCorrectLights = true; //Required for GLTFLoader to work
 
 document.body.appendChild(renderer.domElement);
@@ -52,7 +52,7 @@ var material = new THREE.MeshLambertMaterial({
 });
 var mesh = new THREE.Mesh(geometry, material);
 mesh.rotateX(-.5 * Math.PI); //Rotate 90Deg or .5Rad to create floor
-
+mesh.name = 'floor';
 scene.add(mesh);
 
 //Wall 1
@@ -122,9 +122,13 @@ var dracoLoader = new THREE.DRACOLoader();
 dracoLoader.setDecoderPath('../libs/draco');
 loader.setDRACOLoader(dracoLoader);
 
+var model1 = new THREE.Object3D();
 loader.load(
     '../models/skull/scene.gltf',
     function(gltf) {
+        model1 = gltf.scene;
+        model1.name = 'skull';
+        scene.add(model1);
         scene.add(gltf.scene);
         gltf.animations;
         gltf.scene;
@@ -132,6 +136,11 @@ loader.load(
         gltf.cameras;
         gltf.asset;
         gltf.scene.children[0].position.set(0, player.height, 20);
+        const helper = new THREE.BoxHelper(model1); //creates clickable box around object so onClick intersect works
+        helper.geometry.computeBoundingBox();
+        helper.name = 'skull'
+        helper.material.visible = false;
+        scene.add(helper);
     },
     function(xhr) {
         console.log((xhr.loaded / xhr.total * 100) + '% loaded');
@@ -142,18 +151,13 @@ loader.load(
 );
 
 //Object 2
-var model = new THREE.Object3D();
+var model2 = new THREE.Object3D();
 loader.load(
     '../models/ship/scene.gltf',
     function(gltf) {
-        model = gltf.scene;
-        model.name = 'ship';
-        scene.add(model);
-        model.position.set(20, player.height, 0);
-        model.scale.set(.01, .01, .01);
-        console.log(model, model.name,model.type);
-        /*
-        scene.add(gltf.scene);
+        model2 = gltf.scene;
+        model2.name = 'ship';
+        scene.add(model2);
         gltf.animations;
         gltf.scene;
         gltf.scenes;
@@ -161,7 +165,11 @@ loader.load(
         gltf.asset;
         gltf.scene.children[0].position.set(20, player.height, 0);
         gltf.scene.children[0].scale.set(.01, .01, .01);
-        */
+        const helper = new THREE.BoxHelper(model2);
+        helper.geometry.computeBoundingBox();
+        helper.name = 'ship'
+        helper.material.visible = false;
+        scene.add(helper);
     },
     function(xhr) {
         console.log((xhr.loaded / xhr.total * 100) + '% loaded');
@@ -171,12 +179,22 @@ loader.load(
     }
 );
 
+
+var model3 = new THREE.Object3D();
 //Object 3
+var geometry = new THREE.BoxGeometry(1, 1, 1)
+var material = new THREE.MeshLambertMaterial({
+    color: 0xFFFFFF,
+    opacity: 0,
+    transparent:true
+});
 
 loader.load(
     '../models/drone/scene.gltf',
     function(gltf) {
-        scene.add(gltf.scene);
+        model3 = gltf.scene;
+        model3.name = 'drone';
+        scene.add(model3);
         gltf.animations;
         gltf.scene;
         gltf.scenes;
@@ -184,6 +202,11 @@ loader.load(
         gltf.asset;
         gltf.scene.children[0].position.set(-20, player.height, 0);
         gltf.scene.children[0].scale.set(.01, .01, .01);
+        const helper = new THREE.BoxHelper(model3);
+        helper.geometry.computeBoundingBox();
+        helper.name = 'drone'
+        helper.material.visible = false;
+        scene.add(helper);
     },
     function(xhr) {
         console.log((xhr.loaded / xhr.total * 100) + '% loaded');
@@ -249,14 +272,16 @@ function onClick(event) {
 
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
+    
 
     // update the picking ray with the camera and mouse position
     raycaster.setFromCamera(mouse, camera);
 
     // calculate objects intersecting the picking ray
     const intersects = raycaster.intersectObjects(scene.children);
+    
     //Rotates objects 3 RAD on X axis every click, doesnt work for loaded objects currently
+    flag1 = false; flag2 = false; flag3 = false;
     for (let i = 0; i < intersects.length; i++) {
         if (camera.position.distanceTo(intersects[i].object.position) < 7) {
             //Point lights turn on and off when lamps are clicked
@@ -272,10 +297,21 @@ function onClick(event) {
                 } else {
                     light2.visible = true;
                 }
-            //Clicking the other three objects should rotate them
-            } else {
-
-                intersects[i].object.rotateX(3); //Can check objects name with "intersects[i].object.name == 'Something'" if one is set
+            //Clicking the three gltf objects rotates them
+            } else if (intersects[i].object.name != 'floor') {
+                if (intersects[i].object.name == 'skull' && !flag1){
+                    flag1 = true;
+                    model1.children[0].rotation.x += 3;
+                    console.log(model1);
+                } else if (intersects[i].object.name == 'ship' && !flag2){
+                    flag2 = true;
+                    model2.children[0].rotation.x += 3;
+                    console.log(model2);
+                } else if (intersects[i].object.name == 'drone' && !flag3){
+                    flag3 = true;
+                    model3.children[0].rotation.x += 3;
+                    console.log(model3);
+                }
             }
         }
     }
@@ -309,35 +345,35 @@ window.addEventListener('keyup', keyUp);
 //IN BOUNDS LOGIC || DOESNT WORK, Maybe try implementing differently
 
 //Check direction of movement and position, prevent out of bounds movement
-//
-// var checkBounds = function(direction) {
-//     var flag = true;
-//     var direction = new THREE.Vector3();
-//     camera.getWorldDirection(direction); //Buts camera direction into Vec3 direction
-//     console.log(direction);
-//     console.log(camera.position);
-//     if (direction == "forward") {
-//         if (camera.positon.x + 0.5 > 23 && direction.x > 0) {
-//             flag = false;
-//         }
-//     }
-//     if (direction == "backward") {
-//         if (camera.position.x - 0.5 < -23 || camera.position.x + 0.5 > 23 || camera.position.z - 0.5 < -23 || camera.position.z + 0.5 > 23) {
-//             flag = false;
-//         }
-//     }
-//     if (direction == "left") {
-//         if (camera.position.x - 0.5 < -23 || camera.position.x + 0.5 > 23 || camera.position.z - 0.5 < -23 || camera.position.z + 0.5 > 23) {
-//             flag = false;
-//         }
-//     }
-//     if (direction == "right") {
-//         if (camera.position.x - 0.5 < -23 || camera.position.x + 0.5 > 23 || camera.position.z - 0.5 < -23 || camera.position.z + 0.5 > 23) {
-//             flag = false;
-//         }
-//     }
-//     return flag;
-// }
+
+var checkBounds = function(direction) {
+    var flag = true;
+    var direction = new THREE.Vector3();
+    camera.getWorldDirection(direction); //Buts camera direction into Vec3 direction
+    console.log(direction);
+    console.log(camera.position);
+    if (direction == "forward") {
+        if (camera.positon.x + 0.5 > 23 && direction.x > 0) {
+            flag = false;
+        }
+    }
+    if (direction == "backward") {
+        if (camera.position.x - 0.5 < -23 || camera.position.x + 0.5 > 23 || camera.position.z - 0.5 < -23 || camera.position.z + 0.5 > 23) {
+            flag = false;
+        }
+    }
+    if (direction == "left") {
+        if (camera.position.x - 0.5 < -23 || camera.position.x + 0.5 > 23 || camera.position.z - 0.5 < -23 || camera.position.z + 0.5 > 23) {
+            flag = false;
+        }
+    }
+    if (direction == "right") {
+        if (camera.position.x - 0.5 < -23 || camera.position.x + 0.5 > 23 || camera.position.z - 0.5 < -23 || camera.position.z + 0.5 > 23) {
+            flag = false;
+        }
+    }
+    return flag;
+}
 
 //GAME LOOP FUNCTIONS
 
