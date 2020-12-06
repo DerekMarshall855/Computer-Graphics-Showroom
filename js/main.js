@@ -321,6 +321,11 @@ function onClick(event) {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
+    // Let player control game
+    if (!pointerLockControls.isLocked) {
+        pointerLockControls.lock();
+    }
+
 
     // update the picking ray with the camera and mouse position
     raycaster.setFromCamera(mouse, camera);
@@ -446,14 +451,11 @@ var render = function() {
     renderer.render(scene, camera);
 };
 
-var clock = new THREE.Clock(); //clock.getDelta used for physics, might not need
 var raycaster = new THREE.Raycaster(); //Casts ray from camera, used for click detection
 var mouse = new THREE.Vector2();
 
-
 //Update variable values
 var update = function() {
-    var delta = clock.getDelta();
 
     //87 - W / 65 - A / 83 - S / 68 - D
     if (pointerLockControls.isLocked) { //Only allow movement if mouse locked on canvas
